@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("student")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sessions     PracticeSession[]
+  attempts     QuestionAttempt[]
+  progress     Progress[]
+  enrollments  ClassEnrollment[]
+  ownedClasses Classroom[] @relation("TeacherClasses")
+}
+
+model PracticeSession {
+  id        String   @id @default(uuid())
+  userId    String
+  section   String
+  moduleId  String
+  mode      String   @default("infinite")
+  correct   Int      @default(0)
+  attempted Int      @default(0)
+  startedAt DateTime @default(now())
+  endedAt   DateTime?
+
+  user      User     @relation(fields: [userId], references: [id])
+  attempts  QuestionAttempt[]
+}
+
+model QuestionAttempt {
+  id                String   @id @default(uuid())
+  userId            String
+  sessionId         String
+  section           String
+  moduleId          String
+  questionPayload   Json
+  questionSignature String
+  correctAnswer     String
+  userAnswer        String?
+  isCorrect         Boolean?
+  submitted         Boolean  @default(false)
+  responseMs        Int?
+  createdAt         DateTime @default(now())
+  answeredAt        DateTime?
+
+  user              User     @relation(fields: [userId], references: [id])
+  session           PracticeSession @relation(fields: [sessionId], references: [id])
+
+  @@index([userId, section, moduleId])
+  @@index([sessionId])
+}
+
+model Progress {
+  id              String   @id @default(uuid())
+  userId          String
+  section         String
+  moduleId        String
+  correct         Int      @default(0)
+  attempted       Int      @default(0)
+  bestStreak      Int      @default(0)
+  currentStreak   Int      @default(0)
+  lastPracticedAt DateTime?
+
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, section, moduleId])
+}
+
+model Classroom {
+  id          String   @id @default(uuid())
+  name        String
+  teacherId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  teacher     User @relation("TeacherClasses", fields: [teacherId], references: [id])
+  enrollments ClassEnrollment[]
+}
+
+model ClassEnrollment {
+  id          String   @id @default(uuid())
+  classroomId String
+  userId      String
+  createdAt   DateTime @default(now())
+
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  user        User @relation(fields: [userId], references: [id])
+
+  @@unique([classroomId, userId])
+}
