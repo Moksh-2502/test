@@ -64,4 +64,5 @@ router.get("/me", requireAuth, (req, res) => {
   return res.json({ user: req.user, csrfToken: req.cookies?.[csrfCookieName] });
 });
 
+export { router as authRoutes };
 export default router;

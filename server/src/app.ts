@@ -5,11 +5,11 @@ import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import { env } from "./config/env.js";
 import { csrfProtection } from "./middleware/auth.js";
-import adminRoutes from "./routes/adminRoutes.js";
-import authRoutes from "./routes/authRoutes.js";
-import courseRoutes from "./routes/courseRoutes.js";
-import practiceRoutes from "./routes/practiceRoutes.js";
-import progressRoutes from "./routes/progressRoutes.js";
+import { adminRoutes } from "./routes/adminRoutes.js";
+import { authRoutes } from "./routes/authRoutes.js";
+import { courseRoutes } from "./routes/courseRoutes.js";
+import { practiceRoutes } from "./routes/practiceRoutes.js";
+import { progressRoutes } from "./routes/progressRoutes.js";
 
 export function createApp() {
   const app = express();

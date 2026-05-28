@@ -54,6 +54,7 @@ router.get("/", requireAuth, async (req, res) => {
   });
 });
 
+export { router as progressRoutes };
 export default router;
 type ProgressRow = {
   correct: number;

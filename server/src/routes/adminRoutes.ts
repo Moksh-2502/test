@@ -87,4 +87,5 @@ router.post("/classrooms/enroll", validateBody(enrollSchema), async (req, res) =
   return res.status(201).json({ enrollment });
 });
 
+export { router as adminRoutes };
 export default router;

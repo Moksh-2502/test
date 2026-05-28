@@ -193,4 +193,5 @@ router.post("/submit", requireAuth, validateBody(submitSchema), async (req, res)
   });
 });
 
+export { router as practiceRoutes };
 export default router;

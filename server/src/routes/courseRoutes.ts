@@ -10,4 +10,5 @@ router.get("/", (_req, res) => {
   });
 });
 
+export { router as courseRoutes };
 export default router;
