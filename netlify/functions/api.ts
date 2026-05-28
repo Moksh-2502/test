@@ -21,7 +21,7 @@ export const handler = async (event: unknown, context: unknown) => {
     cachedHandler = serverless(createApp());
   }
 
-  return cachedHandler(event, context);
+  return cachedHandler(event as any, context as any);
 };
 export const config = {
   path: "/api/*"

@@ -5,11 +5,17 @@ import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import { env } from "./config/env.js";
 import { csrfProtection } from "./middleware/auth.js";
-import adminRoutes from "./routes/adminRoutes.js";
-import authRoutes from "./routes/authRoutes.js";
-import courseRoutes from "./routes/courseRoutes.js";
-import practiceRoutes from "./routes/practiceRoutes.js";
-import progressRoutes from "./routes/progressRoutes.js";
+import * as adminRoutesModule from "./routes/adminRoutes.js";
+import * as authRoutesModule from "./routes/authRoutes.js";
+import * as courseRoutesModule from "./routes/courseRoutes.js";
+import * as practiceRoutesModule from "./routes/practiceRoutes.js";
+import * as progressRoutesModule from "./routes/progressRoutes.js";
+
+const adminRoutes = (adminRoutesModule && (adminRoutesModule.default ?? adminRoutesModule)) as import("express").Router;
+const authRoutes = (authRoutesModule && (authRoutesModule.default ?? authRoutesModule)) as import("express").Router;
+const courseRoutes = (courseRoutesModule && (courseRoutesModule.default ?? courseRoutesModule)) as import("express").Router;
+const practiceRoutes = (practiceRoutesModule && (practiceRoutesModule.default ?? practiceRoutesModule)) as import("express").Router;
+const progressRoutes = (progressRoutesModule && (progressRoutesModule.default ?? progressRoutesModule)) as import("express").Router;
 
 export function createApp() {
   const app = express();
