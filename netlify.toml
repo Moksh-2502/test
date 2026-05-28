@@ -1,5 +1,5 @@
 [build]
-  command = "corepack pnpm install --frozen-lockfile=false && corepack pnpm --dir server build && corepack pnpm --dir client build"
+  command = "corepack pnpm install --frozen-lockfile=false && corepack pnpm --dir server prisma:generate && corepack pnpm --dir server build && corepack pnpm --dir client build"
   publish = "client/dist"
   functions = "netlify/functions"
 

@@ -8,7 +8,7 @@
     "server"
   ],
   "scripts": {
-    "build": "corepack pnpm --dir server build && corepack pnpm --dir client build",
+    "build": "corepack pnpm --dir server prisma:generate && corepack pnpm --dir server build && corepack pnpm --dir client build",
     "test": "corepack pnpm --dir server test -- --run && corepack pnpm --dir client test -- --run"
   },
   "dependencies": {
