@@ -1,0 +1,14 @@
+[build]
+  command = "corepack pnpm install --frozen-lockfile=false && corepack pnpm --dir server build && corepack pnpm --dir client build"
+  publish = "client/dist"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

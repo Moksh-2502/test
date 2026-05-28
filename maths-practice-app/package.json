@@ -2,5 +2,21 @@
   "name": "maths-practice-app",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@9.15.9"
+  "packageManager": "pnpm@9.15.9",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "build": "corepack pnpm --dir server build && corepack pnpm --dir client build",
+    "test": "corepack pnpm --dir server test -- --run && corepack pnpm --dir client test -- --run"
+  },
+  "dependencies": {
+    "@netlify/database": "^1.0.0",
+    "@netlify/functions": "^3.1.10",
+    "serverless-http": "^3.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
 }

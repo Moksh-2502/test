@@ -47,6 +47,9 @@ router.post("/question", requireAuth, validateBody(questionSchema), async (req, 
     where: { id: req.body.sessionId, userId: req.user!.id }
   });
   if (!session) return res.status(404).json({ message: "Practice session not found." });
+  if (session.section !== req.body.section || session.moduleId !== req.body.moduleId) {
+    return res.status(400).json({ message: "Question request does not match this practice session." });
+  }
 
   const recent = await prisma.questionAttempt.findMany({
     where: { userId: req.user!.id, sessionId: session.id },
