@@ -14,10 +14,16 @@ importers:
       '@netlify/functions':
         specifier: ^3.1.10
         version: 3.1.10(rollup@4.60.4)
+      '@prisma/client':
+        specifier: 5.22.0
+        version: 5.22.0(prisma@5.22.0)
       serverless-http:
         specifier: ^3.2.0
         version: 3.2.0
     devDependencies:
+      prisma:
+        specifier: 5.22.0
+        version: 5.22.0
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
