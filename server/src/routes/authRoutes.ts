@@ -5,6 +5,8 @@ import { authCookieName, authCookieOptions, csrfCookieName, requireAuth } from "
 import { validateBody } from "../middleware/validate.js";
 import { hashPassword, makeCsrfToken, signAuthToken, verifyPassword } from "../services/auth.js";
 
+type RouterFactory = () => ReturnType<typeof Router>;
+
 function publicUser(user: { id: string; name: string; email: string; role: string }) {
   return { id: user.id, name: user.name, email: user.email, role: user.role };
 }
@@ -16,8 +18,8 @@ function setSessionCookies(res: import("express").Response, user: { id: string; 
   return csrfToken;
 }
 
-export function createAuthRoutes() {
-  const router = Router();
+export function createAuthRoutes(makeRouter: RouterFactory = () => Router()) {
+  const router = makeRouter();
   const registerSchema = z.object({
     name: z.string().trim().min(1),
     email: z.string().trim().email().toLowerCase(),
@@ -66,7 +68,4 @@ export function createAuthRoutes() {
   return router;
 }
 
-const router = createAuthRoutes();
-
-export { router as authRoutes };
-export default router;
+export default createAuthRoutes;

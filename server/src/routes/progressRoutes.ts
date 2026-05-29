@@ -3,8 +3,10 @@ import { prisma } from "../config/prisma.js";
 import { requireAuth } from "../middleware/auth.js";
 import { roundAccuracy } from "../services/scoring.js";
 
-export function createProgressRoutes() {
-  const router = Router();
+type RouterFactory = () => ReturnType<typeof Router>;
+
+export function createProgressRoutes(makeRouter: RouterFactory = () => Router()) {
+  const router = makeRouter();
 
   router.get("/", requireAuth, async (req, res) => {
     const progress = await prisma.progress.findMany({
@@ -58,10 +60,7 @@ export function createProgressRoutes() {
   return router;
 }
 
-const router = createProgressRoutes();
-
-export { router as progressRoutes };
-export default router;
+export default createProgressRoutes;
 type ProgressRow = {
   correct: number;
   attempted: number;

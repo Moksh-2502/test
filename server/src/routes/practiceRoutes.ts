@@ -9,6 +9,8 @@ import { generateQuestion, publicQuestion, signature } from "../services/questio
 import type { Section } from "../services/questionGenerator/index.js";
 import { isNumericAnswer, normalizeAnswer, roundAccuracy } from "../services/scoring.js";
 
+type RouterFactory = () => ReturnType<typeof Router>;
+
 const sectionSchema = z.enum(["abacus", "vedic"]);
 const startSchema = z.object({
   section: sectionSchema,
@@ -25,8 +27,8 @@ const submitSchema = z.object({
   answer: z.string().min(1)
 });
 
-export function createPracticeRoutes() {
-const router = Router();
+export function createPracticeRoutes(makeRouter: RouterFactory = () => Router()) {
+const router = makeRouter();
 
 router.post("/start", requireAuth, validateBody(startSchema), async (req, res) => {
   if (!getCourseItem(req.body.section, req.body.moduleId)) {
@@ -197,7 +199,4 @@ router.post("/submit", requireAuth, validateBody(submitSchema), async (req, res)
 return router;
 }
 
-const router = createPracticeRoutes();
-
-export { router as practiceRoutes };
-export default router;
+export default createPracticeRoutes;

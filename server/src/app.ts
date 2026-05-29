@@ -55,6 +55,7 @@ function authRateLimit() {
 
 export function createApp() {
   const app = express();
+  const makeRouter = () => express.Router();
 
   app.use(securityHeaders);
   app.use(simpleCors);
@@ -63,11 +64,11 @@ export function createApp() {
   app.use(csrfProtection);
 
   app.get("/health", (_req, res) => res.json({ ok: true, service: "mathsprint-api" }));
-  app.use("/api/auth", authRateLimit(), createAuthRoutes());
-  app.use("/api/courses", createCourseRoutes());
-  app.use("/api/progress", createProgressRoutes());
-  app.use("/api/practice", createPracticeRoutes());
-  app.use("/api/admin", createAdminRoutes());
+  app.use("/api/auth", authRateLimit(), createAuthRoutes(makeRouter));
+  app.use("/api/courses", createCourseRoutes(makeRouter));
+  app.use("/api/progress", createProgressRoutes(makeRouter));
+  app.use("/api/practice", createPracticeRoutes(makeRouter));
+  app.use("/api/admin", createAdminRoutes(makeRouter));
 
   app.use((_req, res) => res.status(404).json({ message: "Route not found" }));
 

@@ -5,6 +5,8 @@ import { requireAdmin, requireAuth } from "../middleware/auth.js";
 import { validateBody } from "../middleware/validate.js";
 import { roundAccuracy } from "../services/scoring.js";
 
+type RouterFactory = () => ReturnType<typeof Router>;
+
 type ProgressRow = {
   userId: string;
   correct: number;
@@ -12,8 +14,8 @@ type ProgressRow = {
   bestStreak: number;
 };
 
-export function createAdminRoutes() {
-  const router = Router();
+export function createAdminRoutes(makeRouter: RouterFactory = () => Router()) {
+  const router = makeRouter();
   const createClassSchema = z.object({ name: z.string().trim().min(1) });
   const enrollSchema = z.object({ classroomId: z.string().uuid(), email: z.string().email().toLowerCase() });
 
@@ -90,7 +92,4 @@ export function createAdminRoutes() {
   return router;
 }
 
-const router = createAdminRoutes();
-
-export { router as adminRoutes };
-export default router;
+export default createAdminRoutes;

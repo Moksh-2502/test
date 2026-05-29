@@ -1,8 +1,10 @@
 import { Router } from "express";
 import { abacusLevels, vedicModules } from "../services/courseConfig.js";
 
-export function createCourseRoutes() {
-  const router = Router();
+type RouterFactory = () => ReturnType<typeof Router>;
+
+export function createCourseRoutes(makeRouter: RouterFactory = () => Router()) {
+  const router = makeRouter();
 
   router.get("/", (_req, res) => {
     return res.json({
@@ -14,7 +16,4 @@ export function createCourseRoutes() {
   return router;
 }
 
-const router = createCourseRoutes();
-
-export { router as courseRoutes };
-export default router;
+export default createCourseRoutes;
