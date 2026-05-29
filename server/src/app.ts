@@ -1,5 +1,5 @@
 import express from "express";
-import type { RequestHandler, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { env } from "./config/env.js";
 import { csrfProtection } from "./middleware/auth.js";
 import * as adminRoutesModule from "./routes/adminRoutes.js";
@@ -8,16 +8,16 @@ import * as courseRoutesModule from "./routes/courseRoutes.js";
 import * as practiceRoutesModule from "./routes/practiceRoutes.js";
 import * as progressRoutesModule from "./routes/progressRoutes.js";
 
-const securityHeaders: RequestHandler = (_req, res, next) => {
+function securityHeaders(_req: Request, res: Response, next: NextFunction) {
   res.setHeader("X-DNS-Prefetch-Control", "off");
   res.setHeader("X-Frame-Options", "SAMEORIGIN");
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "no-referrer");
   res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
   next();
-};
+}
 
-const simpleCors: RequestHandler = (req, res, next) => {
+function simpleCors(req: Request, res: Response, next: NextFunction) {
   const origin = req.header("origin");
   if (origin && origin === env.FRONTEND_URL) {
     res.setHeader("Access-Control-Allow-Origin", origin);
@@ -31,7 +31,7 @@ const simpleCors: RequestHandler = (req, res, next) => {
     return;
   }
   next();
-};
+}
 
 function parseCookies(header: string | undefined) {
   const cookies: Record<string, string> = {};
@@ -44,10 +44,10 @@ function parseCookies(header: string | undefined) {
   return cookies;
 }
 
-const simpleCookieParser: RequestHandler = (req, _res, next) => {
+function simpleCookieParser(req: Request, _res: Response, next: NextFunction) {
   req.cookies = parseCookies(req.header("cookie"));
   next();
-};
+}
 
 function authRateLimit() {
   return (_req: unknown, _res: Response, next: () => void) => next();
