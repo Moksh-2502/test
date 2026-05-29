@@ -2,7 +2,7 @@ import * as cookieParserModule from "cookie-parser";
 import * as corsModule from "cors";
 import express from "express";
 import * as rateLimitModule from "express-rate-limit";
-import * as helmetModule from "helmet";
+import type { RequestHandler } from "express";
 import { env } from "./config/env.js";
 import { csrfProtection } from "./middleware/auth.js";
 import * as adminRoutesModule from "./routes/adminRoutes.js";
@@ -31,7 +31,14 @@ function pickFunction<T extends (...args: never[]) => unknown>(moduleValue: unkn
 const cookieParser = pickFunction<typeof import("cookie-parser")>(cookieParserModule, ["cookieParser"]);
 const cors = pickFunction<typeof import("cors")>(corsModule, ["cors"]);
 const rateLimit = pickFunction<typeof import("express-rate-limit").rateLimit>(rateLimitModule, ["rateLimit"]);
-const helmet = pickFunction<() => import("express").RequestHandler[]>(helmetModule, ["helmet"]);
+const securityHeaders: RequestHandler = (_req, res, next) => {
+  res.setHeader("X-DNS-Prefetch-Control", "off");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  next();
+};
 
 const adminRoutes = (adminRoutesModule.adminRoutes ?? adminRoutesModule.default) as import("express").Router;
 const authRoutes = (authRoutesModule.authRoutes ?? authRoutesModule.default) as import("express").Router;
@@ -42,7 +49,7 @@ const progressRoutes = (progressRoutesModule.progressRoutes ?? progressRoutesMod
 export function createApp() {
   const app = express();
 
-  app.use(helmet());
+  app.use(securityHeaders);
   app.use(cors({ origin: env.FRONTEND_URL, credentials: true }));
   app.use(express.json({ limit: "1mb" }));
   app.use(cookieParser(env.COOKIE_SECRET));
