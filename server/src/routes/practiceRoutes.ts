@@ -9,8 +9,6 @@ import { generateQuestion, publicQuestion, signature } from "../services/questio
 import type { Section } from "../services/questionGenerator/index.js";
 import { isNumericAnswer, normalizeAnswer, roundAccuracy } from "../services/scoring.js";
 
-const router = Router();
-
 const sectionSchema = z.enum(["abacus", "vedic"]);
 const startSchema = z.object({
   section: sectionSchema,
@@ -26,6 +24,9 @@ const submitSchema = z.object({
   attemptId: z.string().uuid(),
   answer: z.string().min(1)
 });
+
+export function createPracticeRoutes() {
+const router = Router();
 
 router.post("/start", requireAuth, validateBody(startSchema), async (req, res) => {
   if (!getCourseItem(req.body.section, req.body.moduleId)) {
@@ -192,6 +193,11 @@ router.post("/submit", requireAuth, validateBody(submitSchema), async (req, res)
     }
   });
 });
+
+return router;
+}
+
+const router = createPracticeRoutes();
 
 export { router as practiceRoutes };
 export default router;

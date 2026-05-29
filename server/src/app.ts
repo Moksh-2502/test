@@ -2,11 +2,11 @@ import express from "express";
 import type { NextFunction, Request, Response } from "express";
 import { env } from "./config/env.js";
 import { csrfProtection } from "./middleware/auth.js";
-import adminRoutes from "./routes/adminRoutes.js";
-import authRoutes from "./routes/authRoutes.js";
-import courseRoutes from "./routes/courseRoutes.js";
-import practiceRoutes from "./routes/practiceRoutes.js";
-import progressRoutes from "./routes/progressRoutes.js";
+import { createAdminRoutes } from "./routes/adminRoutes.js";
+import { createAuthRoutes } from "./routes/authRoutes.js";
+import { createCourseRoutes } from "./routes/courseRoutes.js";
+import { createPracticeRoutes } from "./routes/practiceRoutes.js";
+import { createProgressRoutes } from "./routes/progressRoutes.js";
 
 function securityHeaders(_req: Request, res: Response, next: NextFunction) {
   res.setHeader("X-DNS-Prefetch-Control", "off");
@@ -63,11 +63,11 @@ export function createApp() {
   app.use(csrfProtection);
 
   app.get("/health", (_req, res) => res.json({ ok: true, service: "mathsprint-api" }));
-  app.use("/api/auth", authRateLimit(), authRoutes);
-  app.use("/api/courses", courseRoutes);
-  app.use("/api/progress", progressRoutes);
-  app.use("/api/practice", practiceRoutes);
-  app.use("/api/admin", adminRoutes);
+  app.use("/api/auth", authRateLimit(), createAuthRoutes());
+  app.use("/api/courses", createCourseRoutes());
+  app.use("/api/progress", createProgressRoutes());
+  app.use("/api/practice", createPracticeRoutes());
+  app.use("/api/admin", createAdminRoutes());
 
   app.use((_req, res) => res.status(404).json({ message: "Route not found" }));
 
