@@ -1,8 +1,15 @@
+import { getConnectionString } from "@netlify/database";
 import serverless from "serverless-http";
 
 let cachedHandler: ReturnType<typeof serverless> | undefined;
 
 export const handler = async (event: unknown, context: unknown) => {
+  try {
+    process.env.DATABASE_URL = getConnectionString();
+  } catch {
+    process.env.DATABASE_URL ||= process.env.NETLIFY_DB_URL;
+  }
+
   if (!process.env.DATABASE_URL) {
     return {
       statusCode: 500,
