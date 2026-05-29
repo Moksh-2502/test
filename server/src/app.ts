@@ -53,6 +53,10 @@ function authRateLimit() {
   return (_req: unknown, _res: Response, next: () => void) => next();
 }
 
+function healthResponse(_req: Request, res: Response) {
+  return res.json({ ok: true, service: "mathsprint-api" });
+}
+
 export function createApp() {
   const app = express();
   const makeRouter = () => express.Router();
@@ -63,7 +67,8 @@ export function createApp() {
   app.use(simpleCookieParser);
   app.use(csrfProtection);
 
-  app.get("/health", (_req, res) => res.json({ ok: true, service: "mathsprint-api" }));
+  app.get("/health", healthResponse);
+  app.get("/api/health", healthResponse);
   app.use("/api/auth", authRateLimit(), createAuthRoutes(makeRouter));
   app.use("/api/courses", createCourseRoutes(makeRouter));
   app.use("/api/progress", createProgressRoutes(makeRouter));
