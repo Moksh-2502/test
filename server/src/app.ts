@@ -11,10 +11,27 @@ import * as courseRoutesModule from "./routes/courseRoutes.js";
 import * as practiceRoutesModule from "./routes/practiceRoutes.js";
 import * as progressRoutesModule from "./routes/progressRoutes.js";
 
-const cookieParser = (cookieParserModule.default ?? cookieParserModule) as typeof import("cookie-parser");
-const cors = (corsModule.default ?? corsModule) as typeof import("cors");
-const rateLimit = (rateLimitModule.default ?? rateLimitModule.rateLimit) as typeof import("express-rate-limit").rateLimit;
-const helmet = (helmetModule.default ?? helmetModule) as unknown as () => import("express").RequestHandler[];
+function pickFunction<T extends (...args: never[]) => unknown>(moduleValue: unknown, names: string[]) {
+  const moduleRecord = moduleValue as Record<string, unknown> & { default?: unknown };
+  const defaultRecord = moduleRecord.default as (Record<string, unknown> & { default?: unknown }) | undefined;
+  const candidates = [
+    moduleValue,
+    moduleRecord.default,
+    defaultRecord?.default,
+    ...names.map((name) => moduleRecord[name]),
+    ...names.map((name) => defaultRecord?.[name])
+  ];
+  const found = candidates.find((candidate) => typeof candidate === "function");
+  if (!found) {
+    throw new TypeError(`Could not resolve middleware function from ${names.join(", ")}`);
+  }
+  return found as T;
+}
+
+const cookieParser = pickFunction<typeof import("cookie-parser")>(cookieParserModule, ["cookieParser"]);
+const cors = pickFunction<typeof import("cors")>(corsModule, ["cors"]);
+const rateLimit = pickFunction<typeof import("express-rate-limit").rateLimit>(rateLimitModule, ["rateLimit"]);
+const helmet = pickFunction<() => import("express").RequestHandler[]>(helmetModule, ["helmet"]);
 
 const adminRoutes = (adminRoutesModule.adminRoutes ?? adminRoutesModule.default) as import("express").Router;
 const authRoutes = (authRoutesModule.authRoutes ?? authRoutesModule.default) as import("express").Router;
