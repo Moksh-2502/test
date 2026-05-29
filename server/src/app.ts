@@ -2,11 +2,11 @@ import express from "express";
 import type { NextFunction, Request, Response } from "express";
 import { env } from "./config/env.js";
 import { csrfProtection } from "./middleware/auth.js";
-import * as adminRoutesModule from "./routes/adminRoutes.js";
-import * as authRoutesModule from "./routes/authRoutes.js";
-import * as courseRoutesModule from "./routes/courseRoutes.js";
-import * as practiceRoutesModule from "./routes/practiceRoutes.js";
-import * as progressRoutesModule from "./routes/progressRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import courseRoutes from "./routes/courseRoutes.js";
+import practiceRoutes from "./routes/practiceRoutes.js";
+import progressRoutes from "./routes/progressRoutes.js";
 
 function securityHeaders(_req: Request, res: Response, next: NextFunction) {
   res.setHeader("X-DNS-Prefetch-Control", "off");
@@ -52,12 +52,6 @@ function simpleCookieParser(req: Request, _res: Response, next: NextFunction) {
 function authRateLimit() {
   return (_req: unknown, _res: Response, next: () => void) => next();
 }
-
-const adminRoutes = (adminRoutesModule.adminRoutes ?? adminRoutesModule.default) as import("express").Router;
-const authRoutes = (authRoutesModule.authRoutes ?? authRoutesModule.default) as import("express").Router;
-const courseRoutes = (courseRoutesModule.courseRoutes ?? courseRoutesModule.default) as import("express").Router;
-const practiceRoutes = (practiceRoutesModule.practiceRoutes ?? practiceRoutesModule.default) as import("express").Router;
-const progressRoutes = (progressRoutesModule.progressRoutes ?? progressRoutesModule.default) as import("express").Router;
 
 export function createApp() {
   const app = express();
