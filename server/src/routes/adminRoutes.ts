@@ -18,6 +18,25 @@ export function createAdminRoutes(makeRouter: RouterFactory = () => Router()) {
   const router = makeRouter();
   const createClassSchema = z.object({ name: z.string().trim().min(1) });
   const enrollSchema = z.object({ classroomId: z.string().uuid(), email: z.string().email().toLowerCase() });
+  const bootstrapSchema = z.object({ email: z.string().email().toLowerCase() });
+
+  router.post("/bootstrap", validateBody(bootstrapSchema), async (req, res) => {
+    const setupToken = process.env.ADMIN_SETUP_TOKEN ?? process.env.JWT_SECRET;
+    if (!setupToken || req.header("x-admin-setup-token") !== setupToken) {
+      return res.status(403).json({ message: "Admin setup token required." });
+    }
+
+    const existing = await prisma.user.findUnique({ where: { email: req.body.email } });
+    if (!existing) return res.status(404).json({ message: "User not found." });
+
+    const user = await prisma.user.update({
+      where: { id: existing.id },
+      data: { role: "admin" },
+      select: { id: true, name: true, email: true, role: true }
+    });
+
+    return res.json({ user });
+  });
 
   router.use(requireAuth, requireAdmin);
 
